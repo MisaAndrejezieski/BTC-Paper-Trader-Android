@@ -27,6 +27,7 @@
         android:label="BTC Paper Trader"
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
+        android:testOnly="true"
         android:theme="@android:style/Theme.Material.NoActionBar" >
         <activity
             android:name="com.misa.btcpapertrader.MainActivity"
