@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import com.misa.btcpapertrader.domain.util.Formatter
 import com.misa.btcpapertrader.ui.components.CardCotacao
 import com.misa.btcpapertrader.ui.components.CardEstrategiaStatus
+import com.misa.btcpapertrader.ui.components.CardGraficoCotacao
 import com.misa.btcpapertrader.ui.components.CardMetricasRisco
 import com.misa.btcpapertrader.ui.components.CardResumoPortfolio
 import com.misa.btcpapertrader.ui.components.DialogEntradaValor
@@ -61,6 +62,7 @@ import com.misa.btcpapertrader.ui.viewmodel.MainViewModel
 fun MainScreen(viewModel: MainViewModel) {
 
     val cotacao by viewModel.cotacaoState.collectAsState()
+    val precoHistory by viewModel.precoHistoryState.collectAsState()
     val estado by viewModel.estadoState.collectAsState()
     val trades by viewModel.tradesState.collectAsState()
     val cashFlows by viewModel.cashFlowsState.collectAsState()
@@ -136,6 +138,14 @@ fun MainScreen(viewModel: MainViewModel) {
                     cotacao = cotacao,
                     isLoading = isLoading,
                     onRefreshClick = { viewModel.atualizarCotacao() }
+                )
+            }
+
+            // Gráfico de Cotação ao Longo do Tempo
+            item {
+                CardGraficoCotacao(
+                    precos = precoHistory,
+                    precoAtual = cotacao?.precoBrl
                 )
             }
 

@@ -31,6 +31,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _cotacaoState = MutableStateFlow<CotacaoModel?>(null)
     val cotacaoState: StateFlow<CotacaoModel?> = _cotacaoState.asStateFlow()
 
+    private val _precoHistoryState = MutableStateFlow<List<Double>>(emptyList())
+    val precoHistoryState: StateFlow<List<Double>> = _precoHistoryState.asStateFlow()
+
     private val _estadoState = MutableStateFlow(EstadoModel())
     val estadoState: StateFlow<EstadoModel> = _estadoState.asStateFlow()
 

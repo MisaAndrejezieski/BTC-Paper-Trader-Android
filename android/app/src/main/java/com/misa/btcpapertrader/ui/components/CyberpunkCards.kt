@@ -1,6 +1,7 @@
 package com.misa.btcpapertrader.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,7 +31,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -427,4 +431,143 @@ fun DialogEntradaValor(
             }
         }
     )
+}
+
+/**
+ * Card com o gráfico de tendência da cotação ao longo do tempo.
+ */
+@Composable
+fun CardGraficoCotacao(
+    precos: List<Double>,
+    precoAtual: Double?
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = CyberpunkColors.BgCard),
+        border = BorderStroke(1.dp, CyberpunkColors.VerdeEscuro),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "► GRÁFICO DE TENDÊNCIA (BRL)",
+                    color = CyberpunkColors.TextoSecundario,
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily.Monospace
+                )
+                if (precos.size >= 2) {
+                    val variacao = ((precos.last() - precos.first()) / precos.first()) * 100
+                    Text(
+                        text = "${if (variacao >= 0) "+" else ""}${Formatter.formatarPorcentagem(variacao)}",
+                        color = if (variacao >= 0) CyberpunkColors.Lucro else CyberpunkColors.Prejuizo,
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            if (precos.size < 2) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Coletando histórico de preços...",
+                        color = CyberpunkColors.TextoApagado,
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
+            } else {
+                val minP = precos.minOrNull() ?: 0.0
+                val maxP = precos.maxOrNull() ?: 0.0
+                val rangeP = if (maxP > minP) maxP - minP else 1.0
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Máx: ${Formatter.formatarMoeda(maxP)}",
+                        color = CyberpunkColors.TextoSecundario,
+                        fontSize = 10.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+                    Text(
+                        text = "Mín: ${Formatter.formatarMoeda(minP)}",
+                        color = CyberpunkColors.TextoSecundario,
+                        fontSize = 10.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(140.dp)
+                        .background(CyberpunkColors.BgSecundario, RoundedCornerShape(4.dp))
+                        .padding(8.dp)
+                ) {
+                    val width = size.width
+                    val height = size.height
+                    val stepX = if (precos.size > 1) width / (precos.size - 1) else width
+
+                    // Draw grid lines
+                    val gridLines = 4
+                    for (i in 0..gridLines) {
+                        val y = (height / gridLines) * i
+                        drawLine(
+                            color = CyberpunkColors.BgDestaque,
+                            start = Offset(0f, y),
+                            end = Offset(width, y),
+                            strokeWidth = 1f
+                        )
+                    }
+
+                    val points = precos.mapIndexed { index, preco ->
+                        val x = index * stepX
+                        val normalizedY = ((preco - minP) / rangeP).toFloat()
+                        val y = height - (normalizedY * (height * 0.8f) + height * 0.1f)
+                        Offset(x, y)
+                    }
+
+                    // Draw path
+                    val path = Path().apply {
+                        if (points.isNotEmpty()) {
+                            moveTo(points.first().x, points.first().y)
+                            for (i in 1 until points.size) {
+                                lineTo(points[i].x, points[i].y)
+                            }
+                        }
+                    }
+
+                    drawPath(
+                        path = path,
+                        color = CyberpunkColors.VerdeNeon,
+                        style = Stroke(width = 3f)
+                    )
+
+                    // Draw points
+                    points.forEach { pt ->
+                        drawCircle(
+                            color = CyberpunkColors.VerdeMatrix,
+                            radius = 4f,
+                            center = pt
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
