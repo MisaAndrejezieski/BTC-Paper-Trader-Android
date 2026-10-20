@@ -3,6 +3,14 @@ package com.misa.btcpapertrader.data.remote.model
 import com.google.gson.annotations.SerializedName
 
 /**
+ * Resposta DTO do CoinGecko Market Chart: /api/v3/coins/bitcoin/market_chart
+ */
+data class CoinGeckoMarketChartResponse(
+    @SerializedName("prices")
+    val prices: List<List<Double>>?
+)
+
+/**
  * Resposta DTO do CoinGecko: /api/v3/simple/price?ids=bitcoin&vs_currencies=brl
  */
 data class CoinGeckoResponse(

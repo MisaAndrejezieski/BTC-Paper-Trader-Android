@@ -62,7 +62,9 @@ import com.misa.btcpapertrader.ui.viewmodel.MainViewModel
 fun MainScreen(viewModel: MainViewModel) {
 
     val cotacao by viewModel.cotacaoState.collectAsState()
-    val precoHistory by viewModel.precoHistoryState.collectAsState()
+    val timeFrame by viewModel.timeFrameState.collectAsState()
+    val pricePoints by viewModel.pricePointsState.collectAsState()
+    val selectedPoint by viewModel.selectedPointState.collectAsState()
     val estado by viewModel.estadoState.collectAsState()
     val trades by viewModel.tradesState.collectAsState()
     val cashFlows by viewModel.cashFlowsState.collectAsState()
@@ -141,11 +143,14 @@ fun MainScreen(viewModel: MainViewModel) {
                 )
             }
 
-            // Gráfico de Cotação ao Longo do Tempo
+            // Gráfico de Cotação ao Longo do Tempo (Estilo Nubank)
             item {
                 CardGraficoCotacao(
-                    precos = precoHistory,
-                    precoAtual = cotacao?.precoBrl
+                    pricePoints = pricePoints,
+                    timeFrame = timeFrame,
+                    onTimeFrameSelected = { tf -> viewModel.setTimeFrame(tf) },
+                    selectedPoint = selectedPoint,
+                    onSelectedPointChanged = { pt -> viewModel.setSelectedPoint(pt) }
                 )
             }
 

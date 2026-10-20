@@ -3,6 +3,8 @@ package com.misa.btcpapertrader.ui.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,9 +34,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -43,6 +47,10 @@ import androidx.compose.ui.unit.sp
 import com.misa.btcpapertrader.domain.model.CashFlowModel
 import com.misa.btcpapertrader.domain.model.CotacaoModel
 import com.misa.btcpapertrader.domain.model.EstadoModel
+import com.misa.btcpapertrader.domain.model.PricePoint
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import com.misa.btcpapertrader.domain.model.TradeModel
 import com.misa.btcpapertrader.domain.util.Formatter
 import com.misa.btcpapertrader.domain.util.TradingMetrics
@@ -434,12 +442,15 @@ fun DialogEntradaValor(
 }
 
 /**
- * Card com o gráfico de tendência da cotação ao longo do tempo.
+ * Card com o gráfico de cotação ao longo do tempo (Estilo Nubank + Cyberpunk).
  */
 @Composable
 fun CardGraficoCotacao(
-    precos: List<Double>,
-    precoAtual: Double?
+    pricePoints: List<PricePoint>,
+    timeFrame: String,
+    onTimeFrameSelected: (String) -> Unit,
+    selectedPoint: PricePoint?,
+    onSelectedPointChanged: (PricePoint?) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -454,17 +465,74 @@ fun CardGraficoCotacao(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "► GRÁFICO DE TENDÊNCIA (BRL)",
+                    text = "► COTAÇÃO HISTÓRICA",
                     color = CyberpunkColors.TextoSecundario,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.Monospace
                 )
-                if (precos.size >= 2) {
-                    val variacao = ((precos.last() - precos.first()) / precos.first()) * 100
+
+                // Timeframe Selector Buttons (1D, 1S, 1M, 1A, Tudo)
+                val timeFrames = listOf("1D", "1S", "1M", "1A", "Tudo")
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    timeFrames.forEach { tf ->
+                        val selected = tf == timeFrame
+                        Button(
+                            onClick = { onTimeFrameSelected(tf) },
+                            modifier = Modifier.height(28.dp),
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 6.dp, vertical = 0.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (selected) CyberpunkColors.VerdeEscuro else CyberpunkColors.BgSecundario,
+                                contentColor = if (selected) CyberpunkColors.VerdeMatrix else CyberpunkColors.TextoApagado
+                            ),
+                            shape = RoundedCornerShape(4.dp)
+                        ) {
+                            Text(
+                                text = tf,
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            val activePrice = selectedPoint?.priceBrl ?: pricePoints.lastOrNull()?.priceBrl ?: 0.0
+            val firstPrice = pricePoints.firstOrNull()?.priceBrl ?: activePrice
+            val variacao = if (firstPrice > 0) ((activePrice - firstPrice) / firstPrice) * 100 else 0.0
+            val isPositive = variacao >= 0
+            val dateLabel = selectedPoint?.let { formatChartDate(it.timestamp, timeFrame) } ?: getPeriodLabel(timeFrame)
+
+            // Nubank-style header: Price and Variation
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Column {
                     Text(
-                        text = "${if (variacao >= 0) "+" else ""}${Formatter.formatarPorcentagem(variacao)}",
-                        color = if (variacao >= 0) CyberpunkColors.Lucro else CyberpunkColors.Prejuizo,
+                        text = Formatter.formatarMoeda(activePrice),
+                        color = CyberpunkColors.TextoPrimario,
+                        fontSize = 20.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = dateLabel,
+                        color = CyberpunkColors.TextoApagado,
                         fontSize = 11.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
+
+                if (pricePoints.size >= 2) {
+                    Text(
+                        text = "${if (isPositive) "+" else ""}${Formatter.formatarPorcentagem(variacao)}",
+                        color = if (isPositive) CyberpunkColors.Lucro else CyberpunkColors.Prejuizo,
+                        fontSize = 14.sp,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold
                     )
@@ -473,24 +541,25 @@ fun CardGraficoCotacao(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            if (precos.size < 2) {
+            if (pricePoints.size < 2) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(120.dp),
+                        .height(150.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Coletando histórico de preços...",
+                        text = "Carregando histórico do mercado...",
                         color = CyberpunkColors.TextoApagado,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace
                     )
                 }
             } else {
-                val minP = precos.minOrNull() ?: 0.0
-                val maxP = precos.maxOrNull() ?: 0.0
+                val minP = pricePoints.minOfOrNull { it.priceBrl } ?: 0.0
+                val maxP = pricePoints.maxOfOrNull { it.priceBrl } ?: 0.0
                 val rangeP = if (maxP > minP) maxP - minP else 1.0
+                val chartColor = if (isPositive) CyberpunkColors.VerdeNeon else CyberpunkColors.Prejuizo
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -512,62 +581,149 @@ fun CardGraficoCotacao(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Canvas(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(140.dp)
+                        .height(150.dp)
                         .background(CyberpunkColors.BgSecundario, RoundedCornerShape(4.dp))
                         .padding(8.dp)
                 ) {
-                    val width = size.width
-                    val height = size.height
-                    val stepX = if (precos.size > 1) width / (precos.size - 1) else width
+                    Canvas(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(134.dp)
+                            .pointerInput(pricePoints) {
+                                detectTapGestures(
+                                    onPress = { offset ->
+                                        val index = ((offset.x / size.width) * pricePoints.size).toInt().coerceIn(0, pricePoints.size - 1)
+                                        onSelectedPointChanged(pricePoints[index])
+                                        tryAwaitRelease()
+                                        onSelectedPointChanged(null)
+                                    }
+                                )
+                            }
+                            .pointerInput(pricePoints) {
+                                detectDragGestures(
+                                    onDragStart = { offset ->
+                                        val index = ((offset.x / size.width) * pricePoints.size).toInt().coerceIn(0, pricePoints.size - 1)
+                                        onSelectedPointChanged(pricePoints[index])
+                                    },
+                                    onDrag = { change, _ ->
+                                        val index = ((change.position.x / size.width) * pricePoints.size).toInt().coerceIn(0, pricePoints.size - 1)
+                                        onSelectedPointChanged(pricePoints[index])
+                                    },
+                                    onDragEnd = {
+                                        onSelectedPointChanged(null)
+                                    },
+                                    onDragCancel = {
+                                        onSelectedPointChanged(null)
+                                    }
+                                )
+                            }
+                    ) {
+                        val width = size.width
+                        val height = size.height
+                        val stepX = if (pricePoints.size > 1) width / (pricePoints.size - 1) else width
 
-                    // Draw grid lines
-                    val gridLines = 4
-                    for (i in 0..gridLines) {
-                        val y = (height / gridLines) * i
-                        drawLine(
-                            color = CyberpunkColors.BgDestaque,
-                            start = Offset(0f, y),
-                            end = Offset(width, y),
-                            strokeWidth = 1f
-                        )
-                    }
+                        // Draw grid lines
+                        val gridLines = 4
+                        for (i in 0..gridLines) {
+                            val y = (height / gridLines) * i
+                            drawLine(
+                                color = CyberpunkColors.BgDestaque,
+                                start = Offset(0f, y),
+                                end = Offset(width, y),
+                                strokeWidth = 1f
+                            )
+                        }
 
-                    val points = precos.mapIndexed { index, preco ->
-                        val x = index * stepX
-                        val normalizedY = ((preco - minP) / rangeP).toFloat()
-                        val y = height - (normalizedY * (height * 0.8f) + height * 0.1f)
-                        Offset(x, y)
-                    }
+                        val canvasPoints = pricePoints.mapIndexed { index, pt ->
+                            val x = index * stepX
+                            val normalizedY = ((pt.priceBrl - minP) / rangeP).toFloat()
+                            val y = height - (normalizedY * (height * 0.8f) + height * 0.1f)
+                            Offset(x, y)
+                        }
 
-                    // Draw path
-                    val path = Path().apply {
-                        if (points.isNotEmpty()) {
-                            moveTo(points.first().x, points.first().y)
-                            for (i in 1 until points.size) {
-                                lineTo(points[i].x, points[i].y)
+                        if (canvasPoints.isNotEmpty()) {
+                            // Draw area fill gradient
+                            val fillPath = Path().apply {
+                                moveTo(canvasPoints.first().x, height)
+                                canvasPoints.forEach { lineTo(it.x, it.y) }
+                                lineTo(canvasPoints.last().x, height)
+                                close()
+                            }
+                            drawPath(
+                                path = fillPath,
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(chartColor.copy(alpha = 0.35f), Color.Transparent),
+                                    startY = 0f,
+                                    endY = height
+                                )
+                            )
+
+                            // Draw line path
+                            val linePath = Path().apply {
+                                moveTo(canvasPoints.first().x, canvasPoints.first().y)
+                                for (i in 1 until canvasPoints.size) {
+                                    lineTo(canvasPoints[i].x, canvasPoints[i].y)
+                                }
+                            }
+                            drawPath(
+                                path = linePath,
+                                color = chartColor,
+                                style = Stroke(width = 3f)
+                            )
+
+                            // If a point is selected, draw crosshair and highlight
+                            selectedPoint?.let { sel ->
+                                val selIndex = pricePoints.indexOf(sel)
+                                if (selIndex in canvasPoints.indices) {
+                                    val pt = canvasPoints[selIndex]
+                                    // Vertical line
+                                    drawLine(
+                                        color = CyberpunkColors.TextoSecundario,
+                                        start = Offset(pt.x, 0f),
+                                        end = Offset(pt.x, height),
+                                        strokeWidth = 1.5f
+                                    )
+                                    // Circle highlight
+                                    drawCircle(
+                                        color = CyberpunkColors.VerdeMatrix,
+                                        radius = 5f,
+                                        center = pt
+                                    )
+                                    drawCircle(
+                                        color = CyberpunkColors.TextoPrimario,
+                                        radius = 2.5f,
+                                        center = pt
+                                    )
+                                }
                             }
                         }
-                    }
-
-                    drawPath(
-                        path = path,
-                        color = CyberpunkColors.VerdeNeon,
-                        style = Stroke(width = 3f)
-                    )
-
-                    // Draw points
-                    points.forEach { pt ->
-                        drawCircle(
-                            color = CyberpunkColors.VerdeMatrix,
-                            radius = 4f,
-                            center = pt
-                        )
                     }
                 }
             }
         }
+    }
+}
+
+private fun formatChartDate(timestamp: Long, timeFrame: String): String {
+    val date = Date(timestamp)
+    val sdf = when (timeFrame) {
+        "1D" -> SimpleDateFormat("HH:mm", Locale("pt", "BR"))
+        "1S", "1M" -> SimpleDateFormat("dd/MM HH:mm", Locale("pt", "BR"))
+        else -> SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR"))
+    }
+    return sdf.format(date)
+}
+
+private fun getPeriodLabel(timeFrame: String): String {
+    return when (timeFrame) {
+        "1D" -> "Últimas 24 horas"
+        "1S" -> "Última semana"
+        "1M" -> "Último mês"
+        "1A" -> "Último ano"
+        "Tudo" -> "Histórico completo"
+        else -> ""
     }
 }

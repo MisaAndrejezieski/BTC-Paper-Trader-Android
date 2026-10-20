@@ -42,6 +42,14 @@ data class EstadoModel(
 )
 
 /**
+ * Ponto de preço histórico para o gráfico de tendência.
+ */
+data class PricePoint(
+    val timestamp: Long,
+    val priceBrl: Double
+)
+
+/**
  * Cotação spot obtida online ou do cache local.
  */
 data class CotacaoModel(

@@ -9,6 +9,7 @@ import com.misa.btcpapertrader.data.repository.TradeRepository
 import com.misa.btcpapertrader.domain.model.CashFlowModel
 import com.misa.btcpapertrader.domain.model.CotacaoModel
 import com.misa.btcpapertrader.domain.model.EstadoModel
+import com.misa.btcpapertrader.domain.model.PricePoint
 import com.misa.btcpapertrader.domain.model.TradeModel
 import com.misa.btcpapertrader.domain.util.Formatter
 import com.misa.btcpapertrader.domain.util.NotificationHelper
@@ -35,6 +36,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _precoHistoryState = MutableStateFlow<List<Double>>(emptyList())
     val precoHistoryState: StateFlow<List<Double>> = _precoHistoryState.asStateFlow()
+
+    private val _timeFrameState = MutableStateFlow("1D")
+    val timeFrameState: StateFlow<String> = _timeFrameState.asStateFlow()
+
+    private val _pricePointsState = MutableStateFlow<List<PricePoint>>(emptyList())
+    val pricePointsState: StateFlow<List<PricePoint>> = _pricePointsState.asStateFlow()
+
+    private val _selectedPointState = MutableStateFlow<PricePoint?>(null)
+    val selectedPointState: StateFlow<PricePoint?> = _selectedPointState.asStateFlow()
 
     private val _estadoState = MutableStateFlow(EstadoModel())
     val estadoState: StateFlow<EstadoModel> = _estadoState.asStateFlow()
@@ -81,7 +91,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         // Primeira atualização e início do loop de atualização periódica
         atualizarCotacao()
+        setTimeFrame("1D")
         iniciarLoopCotacao()
+    }
+
+    fun setTimeFrame(timeFrame: String) {
+        _timeFrameState.value = timeFrame
+        _selectedPointState.value = null
+        viewModelScope.launch {
+            val days = when (timeFrame) {
+                "1D" -> "1"
+                "1S" -> "7"
+                "1M" -> "30"
+                "1A" -> "365"
+                "Tudo" -> "max"
+                else -> "1"
+            }
+            val points = priceRepository.fetchMarketChart(days)
+            _pricePointsState.value = points
+            _precoHistoryState.value = points.map { it.priceBrl }
+        }
+    }
+
+    fun setSelectedPoint(point: PricePoint?) {
+        _selectedPointState.value = point
     }
 
     fun limparMensagem() {
