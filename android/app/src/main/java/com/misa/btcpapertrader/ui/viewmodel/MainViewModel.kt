@@ -11,10 +11,12 @@ import com.misa.btcpapertrader.domain.model.CotacaoModel
 import com.misa.btcpapertrader.domain.model.EstadoModel
 import com.misa.btcpapertrader.domain.model.TradeModel
 import com.misa.btcpapertrader.domain.util.Formatter
+import com.misa.btcpapertrader.domain.util.NotificationHelper
 import com.misa.btcpapertrader.domain.util.TradingAnalytics
 import com.misa.btcpapertrader.domain.util.TradingMetrics
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -90,7 +92,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         autoRefreshJob?.cancel()
         autoRefreshJob = viewModelScope.launch {
             while (isActive) {
-                delay(30_000) // Atualiza a cada 30 segundos
+                delay(30.seconds) // Atualiza a cada 30 segundos
                 atualizarCotacao(silencioso = true)
             }
         }
@@ -103,13 +105,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val cotacao = priceRepository.buscarCotacao()
                 _cotacaoState.value = cotacao
 
-                val preco = cotacao.precoBrl
                 val currentList = _precoHistoryState.value.toMutableList()
-                if (currentList.isEmpty() || currentList.last() != preco) {
-                    currentList.add(preco)
+                if (currentList.isEmpty() || currentList.last() != cotacao.precoBrl) {
+                    currentList.add(cotacao.precoBrl)
                     if (currentList.size > 50) currentList.removeAt(0)
                     if (currentList.size == 1) {
-                        val base = preco
+                        val base = cotacao.precoBrl
                         currentList.clear()
                         currentList.addAll(listOf(base * 0.998, base * 0.999, base * 1.001, base))
                     }
@@ -121,6 +122,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     val tradeExecutado = tradeRepository.avaliarEstrategia(cotacao.precoBrl)
                     if (tradeExecutado != null) {
                         _mensagemFeedback.value = "Estratégia Automática: Executou ${tradeExecutado.tipo} (${tradeExecutado.motivo})"
+                        NotificationHelper.showTradeNotification(getApplication(), tradeExecutado)
                     }
                 }
             } catch (e: Exception) {
