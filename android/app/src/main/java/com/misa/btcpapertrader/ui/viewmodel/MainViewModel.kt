@@ -100,6 +100,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val cotacao = priceRepository.buscarCotacao()
                 _cotacaoState.value = cotacao
 
+                val preco = cotacao.precoBrl
+                val currentList = _precoHistoryState.value.toMutableList()
+                if (currentList.isEmpty() || currentList.last() != preco) {
+                    currentList.add(preco)
+                    if (currentList.size > 50) currentList.removeAt(0)
+                    if (currentList.size == 1) {
+                        val base = preco
+                        currentList.clear()
+                        currentList.addAll(listOf(base * 0.998, base * 0.999, base * 1.001, base))
+                    }
+                    _precoHistoryState.value = currentList
+                }
+
                 // Avalia e executa estratégia automática se estiver online
                 if (cotacao.atual) {
                     val tradeExecutado = tradeRepository.avaliarEstrategia(cotacao.precoBrl)
