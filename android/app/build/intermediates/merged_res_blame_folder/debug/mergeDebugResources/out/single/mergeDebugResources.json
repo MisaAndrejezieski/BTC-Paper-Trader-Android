@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "com.misa.btcpapertrader.app-debug-48:/drawable_ic_launcher.xml.flat",
+        "source": "com.misa.btcpapertrader.app-main-50:/drawable/ic_launcher.xml"
+    },
+    {
+        "merged": "com.misa.btcpapertrader.app-debug-48:/mipmap_ic_launcher_round.xml.flat",
+        "source": "com.misa.btcpapertrader.app-main-50:/mipmap/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.misa.btcpapertrader.app-debug-48:/mipmap_ic_launcher.xml.flat",
+        "source": "com.misa.btcpapertrader.app-main-50:/mipmap/ic_launcher.xml"
+    }
+]

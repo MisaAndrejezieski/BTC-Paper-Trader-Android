@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -88,12 +89,11 @@ fun MainScreen(viewModel: MainViewModel) {
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) { data ->
                 Snackbar(
+                    snackbarData = data,
                     containerColor = CyberpunkColors.BgDestaque,
                     contentColor = CyberpunkColors.VerdeNeon,
                     actionColor = CyberpunkColors.VerdeMatrix
-                ) {
-                    Text(data.visuals.message, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
-                }
+                )
             }
         },
         containerColor = CyberpunkColors.BgPrincipal

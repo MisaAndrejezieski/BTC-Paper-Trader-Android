@@ -374,7 +374,7 @@ fun DialogEntradaValor(
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = CyberpunkColors.BgCard,
-        titleColor = CyberpunkColors.VerdeMatrix,
+        titleContentColor = CyberpunkColors.VerdeMatrix,
         title = {
             Text(titulo, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
         },
