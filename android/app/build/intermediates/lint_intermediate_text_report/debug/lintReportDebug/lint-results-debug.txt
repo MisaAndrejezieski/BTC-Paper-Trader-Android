@@ -1,0 +1,144 @@
+E:\BTC Paper Trader Android\android\app\src\main\java\com\misa\btcpapertrader\ui\components\CyberpunkCards.kt:276: Warning: Implicitly using the default locale is a common source of bugs: Use String.format(Locale, ...) instead [DefaultLocale]
+                            else -> String.format("%.2f", metricas.profitFactor)
+                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "DefaultLocale":
+   Calling String#toLowerCase() or #toUpperCase() without specifying an
+   explicit locale is a common source of bugs. The reason for that is that
+   those methods will use the current locale on the user's device, and even
+   though the code appears to work correctly when you are developing the app,
+   it will fail in some locales. For example, in the Turkish locale, the
+   uppercase replacement for i is not I.
+
+   If you want the methods to just perform ASCII replacement, for example to
+   convert an enum name, call String#toUpperCase(Locale.ROOT) instead. If you
+   really want to use the current locale, call
+   String#toUpperCase(Locale.getDefault()) instead.
+
+   https://developer.android.com/reference/java/util/Locale.html#default_locale
+
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:2: Warning: A newer version of com.android.application than 8.7.2 is available: 9.4.1. (There is also a newer version of 8.7.𝑥 available, if upgrading to 9.4.1 is difficult: 8.7.3) [AndroidGradlePluginVersion]
+agp = "8.7.2"
+      ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:2: Warning: A newer version of com.android.application than 8.7.2 is available: 9.4.1. (There is also a newer version of 8.7.𝑥 available, if upgrading to 9.4.1 is difficult: 8.7.3) [AndroidGradlePluginVersion]
+agp = "8.7.2"
+      ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:2: Warning: A newer version of com.android.application than 8.7.2 is available: 9.4.1. (There is also a newer version of 8.7.𝑥 available, if upgrading to 9.4.1 is difficult: 8.7.3) [AndroidGradlePluginVersion]
+agp = "8.7.2"
+      ~~~~~~~
+
+   Explanation for issues of type "AndroidGradlePluginVersion":
+   This detector looks for usage of the Android Gradle Plugin where the
+   version you are using is not the current stable release. Using older
+   versions is fine, and there are cases where you deliberately want to stick
+   with an older version. However, you may simply not be aware that a more
+   recent version is available, and that is what this lint check helps find.
+
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:4: Warning: A newer version of androidx.core:core-ktx than 1.15.0 is available: 1.19.1 [GradleDependency]
+coreKotlin = "1.15.0"
+             ~~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:4: Warning: A newer version of androidx.core:core-ktx than 1.15.0 is available: 1.19.1 [GradleDependency]
+coreKotlin = "1.15.0"
+             ~~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:4: Warning: A newer version of androidx.core:core-ktx than 1.15.0 is available: 1.19.1 [GradleDependency]
+coreKotlin = "1.15.0"
+             ~~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:5: Warning: A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.11.0 [GradleDependency]
+lifecycleRuntime = "2.8.7"
+                   ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:5: Warning: A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.11.0 [GradleDependency]
+lifecycleRuntime = "2.8.7"
+                   ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:5: Warning: A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.11.0 [GradleDependency]
+lifecycleRuntime = "2.8.7"
+                   ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:5: Warning: A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.11.0 [GradleDependency]
+lifecycleRuntime = "2.8.7"
+                   ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:5: Warning: A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.11.0 [GradleDependency]
+lifecycleRuntime = "2.8.7"
+                   ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:5: Warning: A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.11.0 [GradleDependency]
+lifecycleRuntime = "2.8.7"
+                   ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:6: Warning: A newer version of androidx.activity:activity-compose than 1.9.3 is available: 1.13.0 [GradleDependency]
+activityCompose = "1.9.3"
+                  ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:6: Warning: A newer version of androidx.activity:activity-compose than 1.9.3 is available: 1.13.0 [GradleDependency]
+activityCompose = "1.9.3"
+                  ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:6: Warning: A newer version of androidx.activity:activity-compose than 1.9.3 is available: 1.13.0 [GradleDependency]
+activityCompose = "1.9.3"
+                  ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:7: Warning: A newer version of androidx.compose:compose-bom than 2024.10.01 is available: 2026.09.00 [GradleDependency]
+composeBom = "2024.10.01"
+             ~~~~~~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:7: Warning: A newer version of androidx.compose:compose-bom than 2024.10.01 is available: 2026.09.00 [GradleDependency]
+composeBom = "2024.10.01"
+             ~~~~~~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:7: Warning: A newer version of androidx.compose:compose-bom than 2024.10.01 is available: 2026.09.00 [GradleDependency]
+composeBom = "2024.10.01"
+             ~~~~~~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:8: Warning: A newer version of androidx.room:room-compiler than 2.6.1 is available: 2.8.5 [GradleDependency]
+room = "2.6.1"
+       ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:8: Warning: A newer version of androidx.room:room-compiler than 2.6.1 is available: 2.8.5 [GradleDependency]
+room = "2.6.1"
+       ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:8: Warning: A newer version of androidx.room:room-compiler than 2.6.1 is available: 2.8.5 [GradleDependency]
+room = "2.6.1"
+       ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:8: Warning: A newer version of androidx.room:room-ktx than 2.6.1 is available: 2.8.5 [GradleDependency]
+room = "2.6.1"
+       ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:8: Warning: A newer version of androidx.room:room-ktx than 2.6.1 is available: 2.8.5 [GradleDependency]
+room = "2.6.1"
+       ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:8: Warning: A newer version of androidx.room:room-ktx than 2.6.1 is available: 2.8.5 [GradleDependency]
+room = "2.6.1"
+       ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:8: Warning: A newer version of androidx.room:room-runtime than 2.6.1 is available: 2.8.5 [GradleDependency]
+room = "2.6.1"
+       ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:8: Warning: A newer version of androidx.room:room-runtime than 2.6.1 is available: 2.8.5 [GradleDependency]
+room = "2.6.1"
+       ~~~~~~~
+E:\BTC Paper Trader Android\android\gradle\libs.versions.toml:8: Warning: A newer version of androidx.room:room-runtime than 2.6.1 is available: 2.8.5 [GradleDependency]
+room = "2.6.1"
+       ~~~~~~~
+
+   Explanation for issues of type "GradleDependency":
+   This detector looks for usages of libraries where the version you are using
+   is not the current stable release. Using older versions is fine, and there
+   are cases where you deliberately want to stick with an older version.
+   However, you may simply not be aware that a more recent version is
+   available, and that is what this lint check helps find.
+
+E:\BTC Paper Trader Android\android\app\src\main\res\values\colors.xml:3: Warning: The resource R.color.launcher_background appears to be unused [UnusedResources]
+    <color name="launcher_background">#0A0E0A</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\BTC Paper Trader Android\android\app\src\main\res\values\colors.xml:4: Warning: The resource R.color.launcher_foreground appears to be unused [UnusedResources]
+    <color name="launcher_foreground">#00FF41</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+E:\BTC Paper Trader Android\android\app\src\main\res\mipmap\ic_launcher.xml:2: Warning: The resource R.mipmap.ic_launcher appears to be unused [UnusedResources]
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+^
+E:\BTC Paper Trader Android\android\app\src\main\res\mipmap\ic_launcher_round.xml:2: Warning: The resource R.mipmap.ic_launcher_round appears to be unused [UnusedResources]
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+^
+
+   Explanation for issues of type "UnusedResources":
+   Unused resources make applications larger and slow down builds.
+
+
+   The unused resource check can ignore tests. If you want to include
+   resources that are only referenced from tests, consider packaging them in a
+   test source set instead.
+
+   You can include test sources in the unused resource check by setting the
+   system property lint.unused-resources.include-tests =true, and to exclude
+   them (usually for performance reasons), use
+   lint.unused-resources.exclude-tests =true.
+   ,
+
+0 errors, 32 warnings

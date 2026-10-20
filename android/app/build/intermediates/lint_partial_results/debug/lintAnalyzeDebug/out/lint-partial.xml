@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 8.7.2" type="partial_results">
+    <map id="UnsafeIntentLaunch">
+            <map id="unprotected">
+                <entry
+                    name="com.misa.btcpapertrader.MainActivity"
+                    boolean="true"/>
+            </map>
+    </map>
+    <map id="UnusedResources">
+        <location id="R.color.launcher_background"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/colors.xml"
+            line="3"
+            column="12"
+            startOffset="64"
+            endLine="3"
+            endColumn="38"
+            endOffset="90"/>
+        <location id="R.color.launcher_foreground"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/colors.xml"
+            line="4"
+            column="12"
+            startOffset="119"
+            endLine="4"
+            endColumn="38"
+            endOffset="145"/>
+        <location id="R.mipmap.ic_launcher"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/mipmap/ic_launcher.xml"
+            line="2"
+            column="1"
+            startOffset="40"
+            endLine="13"
+            endColumn="10"
+            endOffset="433"/>
+        <location id="R.mipmap.ic_launcher_round"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/mipmap/ic_launcher_round.xml"
+            line="2"
+            column="1"
+            startOffset="40"
+            endLine="13"
+            endColumn="10"
+            endOffset="525"/>
+        <entry
+            name="model"
+            string="color[launcher_background(D),launcher_foreground(D)],drawable[ic_launcher(U)],mipmap[ic_launcher(D),ic_launcher_round(D)];;;;"/>
+    </map>
+
+</incidents>
